@@ -193,7 +193,7 @@ const InputTodo = styled.input`
 `;
 
 type Todo = {
-  id: string;
+  id: number;
   name: string;
 };
 
