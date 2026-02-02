@@ -152,6 +152,46 @@ const TodoCheckDone = styled.div`
   margin-left: 20px;
 `;
 
+const TodoItemWrap = styled.div``;
+
+const TodoItemWrap2 = styled.div``;
+
+const DeleteBtn = styled.button`
+  background-color: #f43f5e;
+  width: 13vw;
+  height: 52px;
+  border-radius: 40px;
+  color: white;
+  margin-top: 10px;
+  cursor: pointer;
+  border: 2px solid #0f172a;
+`;
+
+const EditBtn = styled.button`
+  background-color: #e2e8f0;
+  width: 13vw;
+  height: 52px;
+  border-radius: 40px;
+  color: black;
+  margin-top: 10px;
+  cursor: pointer;
+  border: 2px solid #0f172a;
+  margin-right: 20px;
+`;
+
+const InputTodo = styled.input`
+  width: 30vw;
+  height: 50px;
+  border: 1px solid gray;
+  border-radius: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  background-color: #ede9fe;
+  padding-left: 20px;
+`;
+
 type Todo = {
   id: string;
   name: string;
@@ -163,6 +203,9 @@ export default function Home() {
   const [todoArr, setTodoArr] = useState<Todo[]>([]);
   const [done, setDone] = useState<boolean>(false);
   const tempArr: Todo[] = [];
+  const [inputOpen, setInputOpen] = useState<boolean>(false);
+  const [doneBtnOpen, setDoneBtnOpen] = useState<boolean>(false);
+  const [editValue, setEditValue] = useState<string>("");
 
   const postHandler = () => {
     axios
@@ -198,6 +241,39 @@ export default function Home() {
     setDone(true);
   };
 
+  // const onChange = (e) => {
+  //   axios
+  //     .post(
+  //       "https://assignment-todolist-api.vercel.app/api/ehdgus5338/images/upload",
+  //       { url: e.target.files[0].name },
+  //     )
+  //     .then((res) => console.log(res));
+  // };
+
+  const deleteHandler = (id: number) => {
+    axios
+      .delete(
+        `https://assignment-todolist-api.vercel.app/api/ehdgus5338/items/${id}`,
+      )
+      .then((res) => window.location.reload());
+  };
+
+  const inputOpenHandler = () => {
+    setInputOpen(true);
+    setDoneBtnOpen(true);
+  };
+
+  const editHandler = (id: number) => {
+    axios
+      .patch(
+        `https://assignment-todolist-api.vercel.app/api/ehdgus5338/items/${id}`,
+        {
+          name: editValue,
+        },
+      )
+      .then((res) => window.location.reload());
+  };
+
   return (
     <Container>
       <HeaderWrap>
@@ -229,22 +305,59 @@ export default function Home() {
           <TodoBox1>
             {todos.map((ele, idx) => {
               return (
-                <TodoItem key={ele.id}>
-                  <TodoCheck onClick={() => doneHandler(ele, idx)}></TodoCheck>
-                  <TodoName>{ele.name}</TodoName>
-                  <div></div>
-                </TodoItem>
+                <TodoItemWrap key={ele.id}>
+                  {inputOpen ? (
+                    <InputTodo
+                      placeholder="수정할 할일을 적어주세요!"
+                      onChange={(e) => setEditValue(e.target.value)}
+                    />
+                  ) : (
+                    <TodoItem>
+                      <TodoCheck
+                        onClick={() => doneHandler(ele, idx)}
+                      ></TodoCheck>
+                      <TodoName>{ele.name}</TodoName>
+                      <div></div>
+                    </TodoItem>
+                  )}
+                  {doneBtnOpen ? (
+                    <EditBtn onClick={() => editHandler(ele.id)}>완료</EditBtn>
+                  ) : (
+                    <EditBtn onClick={() => inputOpenHandler()}>수정</EditBtn>
+                  )}
+                  <DeleteBtn onClick={() => deleteHandler(ele.id)}>
+                    삭제
+                  </DeleteBtn>
+                  {/* <TodoInput type="file" accept="image/*" onChange={onChange} /> */}
+                </TodoItemWrap>
               );
             })}
           </TodoBox1>
           <TodoBox2>
             {todoArr.map((ele) => {
               return (
-                <TodoItem2 key={ele.id}>
-                  <TodoCheckDone>✅</TodoCheckDone>
-                  <TodoName2>{ele.name}</TodoName2>
-                  <div></div>
-                </TodoItem2>
+                <TodoItemWrap2 key={ele.id}>
+                  {inputOpen ? (
+                    <InputTodo
+                      placeholder="수정할 할일을 적어주세요!"
+                      onChange={(e) => setEditValue(e.target.value)}
+                    />
+                  ) : (
+                    <TodoItem2>
+                      <TodoCheckDone>✅</TodoCheckDone>
+                      <TodoName2>{ele.name}</TodoName2>
+                      <div></div>
+                    </TodoItem2>
+                  )}
+                  {doneBtnOpen ? (
+                    <EditBtn onClick={() => editHandler(ele.id)}>완료</EditBtn>
+                  ) : (
+                    <EditBtn onClick={() => inputOpenHandler()}>수정</EditBtn>
+                  )}
+                  <DeleteBtn onClick={() => deleteHandler(ele.id)}>
+                    삭제
+                  </DeleteBtn>
+                </TodoItemWrap2>
               );
             })}
           </TodoBox2>
